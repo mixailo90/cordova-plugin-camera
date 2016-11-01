@@ -747,8 +747,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
 
 
 
-   if (requestCode == CAMERA_PIC_REQUEST && resultCode == RESULT_OK) {
-
+   if (resultCode == RESULT_OK) {
 
         // mContext is the context of the activity
         mContext.getContentResolver().delete(data.getData(), null, null);
