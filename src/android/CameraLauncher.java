@@ -90,6 +90,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
     public static final int PERMISSION_DENIED_ERROR = 20;
     public static final int TAKE_PIC_SEC = 0;
     public static final int SAVE_TO_ALBUM_SEC = 1;
+    private File tempFile = null;
 
     private static final String LOG_TAG = "CameraLauncher";
 
@@ -235,6 +236,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
      * @param encodingType      JPEG or PNG
      */
     public void callTakePicture(int returnType, int encodingType) {
+        boolean saveAlbumPermission = PermissionHelper.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         boolean takePicturePermission = PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
 
         // CB-10120: The CAMERA permission does not need to be requested unless it is declared
@@ -331,7 +333,8 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             throw new IllegalArgumentException("Invalid Encoding Type: " + encodingType);
         }
 
-        return new File(getTempDirectoryPath(), fileName);
+        tempFile = new File(getTempDirectoryPath(), fileName);
+        return tempFile;
     }
 
 
@@ -684,6 +687,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
                 if (bitmap == null) {
                     LOG.d(LOG_TAG, "I either have a null image path or bitmap");
                     this.failPicture("Unable to create bitmap!");
+
                     return;
                 }
 
@@ -708,6 +712,10 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
                         } catch (Exception e) {
                             e.printStackTrace();
                             this.failPicture("Error retrieving image.");
+                            if(tempFile != null) {
+                                                tempFile.delete();
+                                                tempFile = null;
+                                            }
                         }
                     }
                     else {
@@ -754,11 +762,19 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             }// If cancelled
             else if (resultCode == Activity.RESULT_CANCELED) {
                 this.failPicture("Camera cancelled.");
+                if(tempFile != null) {
+                    tempFile.delete();
+                    tempFile = null;
+                }
             }
 
             // If something else
             else {
                 this.failPicture("Did not complete!");
+                if(tempFile != null) {
+                                    tempFile.delete();
+                                    tempFile = null;
+                                }
             }
         }
         // If CAMERA
@@ -777,17 +793,29 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
                 } catch (IOException e) {
                     e.printStackTrace();
                     this.failPicture("Error capturing image.");
+                    if(tempFile != null) {
+                                        tempFile.delete();
+                                        tempFile = null;
+                                    }
                 }
             }
 
             // If cancelled
             else if (resultCode == Activity.RESULT_CANCELED) {
                 this.failPicture("Camera cancelled.");
+                if(tempFile != null) {
+                    tempFile.delete();
+                    tempFile = null;
+                }
             }
 
             // If something else
             else {
                 this.failPicture("Did not complete!");
+                if(tempFile != null) {
+                                    tempFile.delete();
+                                    tempFile = null;
+                                }
             }
         }
         // If retrieving photo from library
@@ -803,9 +831,17 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             }
             else if (resultCode == Activity.RESULT_CANCELED) {
                 this.failPicture("Selection cancelled.");
+                if(tempFile != null) {
+                                    tempFile.delete();
+                                    tempFile = null;
+                                }
             }
             else {
                 this.failPicture("Selection did not complete!");
+                if(tempFile != null) {
+                                    tempFile.delete();
+                                    tempFile = null;
+                                }
             }
         }
     }
@@ -1235,6 +1271,10 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             }
         } catch (Exception e) {
             this.failPicture("Error compressing image.");
+            if(tempFile != null) {
+                                tempFile.delete();
+                                tempFile = null;
+                            }
         }
         jpeg_data = null;
     }
@@ -1246,6 +1286,10 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
      */
     public void failPicture(String err) {
         this.callbackContext.error(err);
+        if(tempFile != null) {
+                            tempFile.delete();
+                            tempFile = null;
+                        }
     }
 
     private void scanForGallery(Uri newImage) {
