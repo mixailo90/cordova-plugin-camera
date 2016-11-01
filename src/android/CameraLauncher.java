@@ -745,6 +745,18 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         int srcType = (requestCode / 16) - 1;
         int destType = (requestCode % 16) - 1;
 
+
+
+   if (requestCode == CAMERA_PIC_REQUEST && resultCode == RESULT_OK) {
+
+        /* Copy the file to other directory or whatever you want */
+
+        // mContext is the context of the activity
+        mContext.getContentResolver().delete(data.getData(), null, null);
+    }
+
+
+
         // If Camera Crop
         if (requestCode >= CROP_CAMERA) {
             if (resultCode == Activity.RESULT_OK) {
