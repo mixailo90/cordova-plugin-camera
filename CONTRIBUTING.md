@@ -21,7 +21,7 @@
 
 # Contributing to Apache Cordova
 
-Anyone can contribute to Cordova. And we need your contributions.
+Anyone can contribute to Cordova. And we need your contributions. Mixaaaaa
 
 There are multiple ways to contribute: report bugs, improve the docs, and
 contribute code.
