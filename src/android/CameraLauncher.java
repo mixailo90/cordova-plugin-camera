@@ -749,7 +749,6 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
 
    if (requestCode == CAMERA_PIC_REQUEST && resultCode == RESULT_OK) {
 
-        /* Copy the file to other directory or whatever you want */
 
         // mContext is the context of the activity
         mContext.getContentResolver().delete(data.getData(), null, null);
