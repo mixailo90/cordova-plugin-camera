@@ -857,7 +857,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             return 0;
         }
     }
-    
+
     /**
      * Write an inputstream to local disk
      *
@@ -1099,6 +1099,10 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             if (localFile != null) {
                 localFile.delete();
             }
+            if (tempFile != null) {
+              tempFile.delete();
+              tempFile = null;
+            }
         }
 
     }
@@ -1196,6 +1200,11 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
 
         // Clean up initial camera-written image file.
         (new File(FileHelper.stripFileProtocol(oldImage.toString()))).delete();
+
+        if(tempFile != null){
+          tempFile.delete();
+          tempFile = null;
+        }
 
         checkForDuplicateImage(imageType);
         // Scan for the gallery to update pic refs in gallery
